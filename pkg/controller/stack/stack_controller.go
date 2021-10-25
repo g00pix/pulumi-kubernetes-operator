@@ -789,6 +789,16 @@ func (sess *reconcileStackSession) InstallProjectDependencies(ctx context.Contex
 	sess.logger.Debug("InstallProjectDependencies", "workspace", workspace.WorkDir())
 	switch project.Runtime.Name() {
 	case "nodejs":
+		// symlink node cache to current folder
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			errors.Wrap(err, "Failed to get home directory")
+		}
+		err = os.Symlink(homeDir + "/nodecache", sess.rootDir + "/node_modules")
+		if err != nil {
+			errors.Wrap(err, "Failed to symlink node modules cache directory")
+		}
+
 		npm, _ := exec.LookPath("npm")
 		if npm == "" {
 			npm, _ = exec.LookPath("yarn")
@@ -798,7 +808,7 @@ func (sess *reconcileStackSession) InstallProjectDependencies(ctx context.Contex
 		}
 		// TODO: Consider using `npm ci` instead if there is a `package-lock.json` or `npm-shrinkwrap.json` present
 		cmd := exec.Command(npm, "install", "--production", "--no-audit")
-		_, _, err := sess.runCmd("NPM/Yarn", cmd, workspace)
+		_, _, err = sess.runCmd("NPM/Yarn", cmd, workspace)
 		return err
 	case "python":
 		python3, _ := exec.LookPath("python3")

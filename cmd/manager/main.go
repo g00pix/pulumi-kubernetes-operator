@@ -77,6 +77,19 @@ func main() {
 
 	printVersion()
 
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Error(err, "Failed to get home directory")
+		os.Exit(1)
+	}
+
+	// Create node modules cache folder
+	err = os.Mkdir(homeDir + "/nodecache", 0755)
+	if err != nil {
+		log.Error(err, "Failed to create node module cache directory")
+		os.Exit(1)
+	}
+
 	namespace, err := k8sutil.GetWatchNamespace()
 	if err != nil {
 		log.Error(err, "Failed to get watch namespace")
