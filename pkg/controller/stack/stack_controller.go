@@ -797,7 +797,7 @@ func (sess *reconcileStackSession) InstallProjectDependencies(ctx context.Contex
 			return errors.New("did not find 'npm' or 'yarn' on the PATH; can't install project dependencies")
 		}
 		// TODO: Consider using `npm ci` instead if there is a `package-lock.json` or `npm-shrinkwrap.json` present
-		cmd := exec.Command(npm, "install")
+		cmd := exec.Command(npm, "install", "--production", "--no-audit")
 		_, _, err := sess.runCmd("NPM/Yarn", cmd, workspace)
 		return err
 	case "python":
