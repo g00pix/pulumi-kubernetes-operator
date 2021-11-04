@@ -8,13 +8,15 @@ COPY pulumi-kubernetes-operator ${OPERATOR}
 COPY build/bin/* /usr/local/bin/
 RUN  /usr/local/bin/user_setup
 
-RUN useradd -m pulumi-kubernetes-operator
+ARG UID=1000
+
+RUN useradd -m pulumi-kubernetes-operator -u ${UID}
 RUN mkdir -p /home/pulumi-kubernetes-operator/.ssh \
     && touch /home/pulumi-kubernetes-operator/.ssh/known_hosts \
     && chmod 700 /home/pulumi-kubernetes-operator/.ssh \
     && chown -R pulumi-kubernetes-operator:pulumi-kubernetes-operator /home/pulumi-kubernetes-operator/.ssh
 
-USER pulumi-kubernetes-operator
+USER ${UID}
 
 ENV XDG_CONFIG_HOME=/tmp/.config
 ENV XDG_CACHE_HOME=/tmp/.cache
